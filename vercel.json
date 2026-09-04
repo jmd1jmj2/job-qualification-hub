@@ -1,11 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/assess.js": {
+    "api/assess2.js": {
       "maxDuration": 60
     }
   },
   "rewrites": [
-    { "source": "/api/assess", "destination": "/api/assess.js" }
+    { "source": "/api/assess", "destination": "/api/assess2.js" }
   ]
 }
