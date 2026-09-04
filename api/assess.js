@@ -1,4 +1,6 @@
-module.exports = async function handler(req, res) {
+import { generateText } from 'ai';
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
@@ -50,13 +52,6 @@ module.exports = async function handler(req, res) {
           source: 'job_url'
         });
       }
-    }
-
-    const aiKey = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
-    if (!aiKey) {
-      return res.status(503).json({
-        error: 'AI Gateway authentication is not configured on this Vercel project.'
-      });
     }
 
     const systemPrompt = `You are a career strategy assessor. Evaluate the supplied job against this candidate profile and return ONLY valid JSON, no markdown.
@@ -145,35 +140,18 @@ Rules:
 - Do not invent compensation details that are not in the posting. If unavailable, use null and state uncertainty.
 - Be rigorous. A role should not score highly simply because the candidate is qualified; it must also advance the desired strategic career direction.`;
 
-    const userPrompt = `Assess this job posting:\n\n${jobText}`;
-
-    const aiResp = await fetch('https://ai-gateway.vercel.sh/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${aiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-5.6-sol',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        stream: false
-      }),
-      signal: AbortSignal.timeout(45000)
+    const { text } = await generateText({
+      model: 'openai/gpt-5.6-sol',
+      system: systemPrompt,
+      prompt: `Assess this job posting:\n\n${jobText}`,
+      providerOptions: {
+        gateway: {
+          disallowPromptTraining: true
+        }
+      }
     });
 
-    const aiData = await aiResp.json().catch(() => ({}));
-    if (!aiResp.ok) {
-      return res.status(502).json({
-        error: 'The AI assessment service returned an error.',
-        details: aiData?.error?.message || aiData?.message || 'Unknown AI Gateway error'
-      });
-    }
-
-    let content = aiData?.choices?.[0]?.message?.content || '';
-    content = String(content).trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+    let content = String(text || '').trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
 
     let assessment;
     try {
@@ -198,4 +176,4 @@ Rules:
       details: String(err?.message || err)
     });
   }
-};
+}
