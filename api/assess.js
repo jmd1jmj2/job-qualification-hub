@@ -1,15 +1,27 @@
 import { generateText } from 'ai';
 
+const ALLOWED_ORIGIN = 'https://jmd1jmj2.github.io';
+
+function setCors(res) {
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Vary', 'Origin');
+}
+
 export default async function handler(req, res) {
+  setCors(res);
+
+  if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const jobUrl = String(body.jobUrl || '').trim();
-    const pastedDescription = String(body.jobDescription || '').trim();
+    const jobUrl = String(body.jobUrl || body.url || '').trim();
+    const pastedDescription = String(body.jobDescription || body.description || '').trim();
 
     if (!jobUrl && !pastedDescription) {
       return res.status(400).json({ error: 'Provide a job URL or pasted job description.' });
@@ -20,37 +32,24 @@ export default async function handler(req, res) {
 
     if (!jobText && jobUrl) {
       let parsed;
-      try {
-        parsed = new URL(jobUrl);
-      } catch {
-        return res.status(400).json({ error: 'The job URL is not valid.' });
-      }
+      try { parsed = new URL(jobUrl); }
+      catch { return res.status(400).json({ error: 'The job URL is not valid.' }); }
+
       if (!['http:', 'https:'].includes(parsed.protocol)) {
         return res.status(400).json({ error: 'Only http/https job URLs are supported.' });
       }
-      if (jobUrl.length > 2000) {
-        return res.status(400).json({ error: 'The job URL is too long.' });
-      }
 
-      const readerUrl = 'https://r.jina.ai/' + jobUrl;
-      const pageResp = await fetch(readerUrl, {
-        headers: { 'User-Agent': 'CareerStrategyHub/1.0' },
-        signal: AbortSignal.timeout(12000)
+      const pageResp = await fetch('https://r.jina.ai/' + jobUrl, {
+        headers: { 'User-Agent': 'CareerStrategyHub/2.0' }
       });
 
       if (!pageResp.ok) {
-        return res.status(422).json({
-          error: 'I could not read that job page automatically. Paste the job description instead.',
-          source: 'job_url'
-        });
+        return res.status(422).json({ error: 'I could not read that job page automatically. Paste the job description instead.' });
       }
 
       jobText = (await pageResp.text()).slice(0, 45000);
       if (jobText.length < 200) {
-        return res.status(422).json({
-          error: 'The job page did not return enough readable content. Paste the job description instead.',
-          source: 'job_url'
-        });
+        return res.status(422).json({ error: 'The job page did not return enough readable content. Paste the job description instead.' });
       }
     }
 
@@ -74,19 +73,7 @@ Scoring model and weights:
 5. Transferability / Differentiation 10%
 6. Lifestyle / Practical Fit 10%
 
-Overall fit labels:
-90-100 Exceptional / Priority Apply
-85-89 Strong / Priority Apply
-78-84 Good / Apply
-70-77 Strategic Stretch / Selective Apply
-60-69 Weak Fit / Usually Skip
-Below 60 Skip
-
-Red-flag override: materially lower compensation, overwhelmingly tactical work, scope reduction, hard non-negotiable qualification gap, severe travel/lifestyle mismatch, or likely pigeonholing into work the candidate is trying to leave.
-
-Strategic-stretch override: still recommend applying around 70-75% qualification when strategic career fit is exceptional, the experience gap is learnable rather than credential-based, transferable experience is compelling, compensation supports the move, and the role materially advances future market value.
-
-Return this JSON shape exactly:
+Return exactly this JSON shape:
 {
   "roleTitle": string|null,
   "company": string|null,
@@ -145,35 +132,17 @@ Rules:
       system: systemPrompt,
       prompt: `Assess this job posting:\n\n${jobText}`,
       providerOptions: {
-        gateway: {
-          disallowPromptTraining: true
-        }
+        gateway: { disallowPromptTraining: true }
       }
     });
 
-    let content = String(text || '').trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
-
+    const content = String(text || '').trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
     let assessment;
-    try {
-      assessment = JSON.parse(content);
-    } catch {
-      return res.status(502).json({
-        error: 'The AI returned an assessment that could not be parsed. Please try again.',
-        raw: content.slice(0, 1500)
-      });
-    }
+    try { assessment = JSON.parse(content); }
+    catch { return res.status(502).json({ error: 'The AI returned an assessment that could not be parsed. Please try again.' }); }
 
-    return res.status(200).json({
-      success: true,
-      source,
-      jobUrl: jobUrl || null,
-      assessment
-    });
+    return res.status(200).json({ success: true, source, jobUrl: jobUrl || null, assessment });
   } catch (err) {
-    const isTimeout = err && (err.name === 'TimeoutError' || err.name === 'AbortError');
-    return res.status(isTimeout ? 504 : 500).json({
-      error: isTimeout ? 'The assessment timed out. Try again or paste the job description.' : 'Unexpected server error.',
-      details: String(err?.message || err)
-    });
+    return res.status(500).json({ error: 'Unexpected assessment error.', details: String(err?.message || err) });
   }
 }
