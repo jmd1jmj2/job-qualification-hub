@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Career Strategy Hub</title>
+</head>
+<body>
+<p style="font-family:Arial,sans-serif;padding:20px">Loading Career Strategy Hub…</p>
+<script>
+(async()=>{
+  try{
+    const r=await fetch('/hub-v9.html?v=10',{cache:'no-store'});
+    if(!r.ok) throw new Error('Could not load the hub.');
+    let html=await r.text();
+    const mobileStyle=`<style id="v10-mobile-fix">
+@media(max-width:700px){
+  body{font-size:16px} header{padding:20px 14px} header h1{font-size:28px} header p{line-height:1.4}
+  .wrap{width:100%;max-width:100%}.panel{padding:14px 9px;scroll-margin-top:64px}.card{padding:14px;border-radius:12px}
+  nav{position:sticky;top:0}.tabs{padding:8px;gap:6px;scroll-snap-type:x proximity}.tabs a{padding:9px 11px;font-size:13px;scroll-snap-align:start}
+  .grid{gap:10px}.formgrid{grid-template-columns:1fr!important;gap:10px}.span3,.span4,.span6,.span8,.span12{grid-column:span 12!important}
+  input,select,textarea{font-size:16px;min-height:44px} textarea{min-height:135px}
+  .btn{min-height:44px;padding:11px 14px}.actions,.opp-tools{display:grid;grid-template-columns:1fr;gap:8px;width:100%}.actions .btn,.opp-tools .btn,.opp-tools select{width:100%;max-width:none!important;text-align:center}
+  .modebar{display:grid;grid-template-columns:1fr 1fr}.modebar button{min-height:44px}
+  .scoreRow{grid-template-columns:1fr 88px;gap:8px}.scoreRow input{min-width:0}.weight{display:none}.bigscore{font-size:40px}
+  .company-grid,.opp-pipeline{grid-template-columns:1fr!important;gap:10px}.opp-card{padding:12px}.opp-group h3{padding:11px 12px}
+  .sectionhead{display:block}.sectionhead>.btn,.sectionhead>a.btn{width:100%;margin-top:10px;text-align:center}
+  table{min-width:0!important} .desktop-table{display:none!important}.mobile-job-list{display:grid!important;gap:10px}.mobile-job-card{border:1px solid #e4e7ec;border-radius:12px;padding:13px;background:#fff}.mobile-job-title{font-weight:900;font-size:16px}.mobile-job-meta{font-size:12px;color:#667085;margin:4px 0 10px}.mobile-job-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.mobile-job-grid>div{background:#f8f9fc;border-radius:8px;padding:9px}.mobile-job-grid strong{display:block;font-size:12px;margin-bottom:2px}.mobile-job-actions{display:grid;grid-template-columns:1fr;gap:8px}.mobile-job-actions .btn,.mobile-job-actions select{width:100%;min-height:44px}
+}
+@media(min-width:701px){.mobile-job-list{display:none!important}}
+</style>`;
+    html=html.replace('</head>',mobileStyle+'</head>');
+    const fixScript=`<script id="v10-behavior-fix">
+(function(){
+  const $v=id=>document.getElementById(id);
+  function safeJson(text){try{return JSON.parse(text)}catch{return null}}
+  window.assessCurrent=async function(){
+    const jobUrl=($v('url')?.value||'').trim(),jobDescription=($v('description')?.value||'').trim();
+    const status=$v('assessmentStatus'),button=$v('assessJob');
+    if(!jobUrl&&!jobDescription){status.className='error';status.textContent='Paste a job link or job description first.';return}
+    status.className='notice';status.textContent='Assessing role… Please keep this page open. This can take up to a minute.';button.disabled=true;button.textContent='Assessing…';
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
+    try{
+      const resp=await fetch('/api/assess',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobUrl,jobDescription}),signal:controller.signal,cache:'no-store'});
+      const raw=await resp.text(),data=safeJson(raw);
+      if(!data){throw new Error('The assessment service returned an unreadable response. Refresh the page and try again.')}
+      if(!resp.ok) throw new Error(data.error||data.details||('Assessment service returned '+resp.status));
+      const a=data.assessment||data;
+      if(!a||!a.scores) throw new Error('The assessment completed without usable scoring data. Try the Job Description option and paste the posting text.');
+      if(a.roleTitle)$v('title').value=a.roleTitle;if(a.company)$v('company').value=a.company;
+      if(a.location||a.workStyle)$v('location').value=[a.location,a.workStyle].filter(Boolean).join(' — ');
+      if(a.travelPercent!=null)$v('travel').value=a.travelPercent;if(a.publishedBaseMin!=null)$v('baseMin').value=a.publishedBaseMin;if(a.publishedBaseMax!=null)$v('baseMax').value=a.publishedBaseMax;if(a.targetBonusPercent!=null)$v('bonus').value=a.targetBonusPercent;if(a.equityOrRsuEstimate!=null)$v('equity').value=a.equityOrRsuEstimate;
+      $v('sQual').value=a.scores.qualification??80;$v('sStrategy').value=a.scores.strategicCareer??85;$v('sLeadership').value=a.scores.leadershipScope??85;$v('sComp').value=a.scores.compensation??80;$v('sDiff').value=a.scores.differentiation??85;$v('sLife').value=a.scores.lifestyle??80;
+      $v('risk').value=[a.gapSeverity,a.riskSummary].filter(Boolean).join(' — ');$v('why').value=a.whyWorthIt||'';
+      if(typeof updateLive==='function')updateLive();if(a.recommendation)$v('recommendation').value=a.recommendation;
+      status.className='success';status.textContent='Assessment complete'+(data.assessorVersion?' · '+data.assessorVersion:'')+'. Review the scores and save the role.';
+      status.scrollIntoView({behavior:'smooth',block:'center'});
+    }catch(e){
+      status.className='error';
+      status.textContent=e.name==='AbortError'?'Assessment timed out. Try again using Job Description and paste the posting text.':'Assessment could not complete: '+e.message;
+      status.scrollIntoView({behavior:'smooth',block:'center'});
+    }finally{clearTimeout(timer);button.disabled=false;button.textContent='Assess Job'}
+  };
+  const btn=$v('assessJob');if(btn)btn.onclick=window.assessCurrent;
+  const originalAssessOpp=window.assessOpp;
+  window.assessOpp=function(id){
+    const o=window.opps?.find(x=>x.id===id);if(!o){if(originalAssessOpp)return originalAssessOpp(id);return}
+    const r=typeof readiness==='function'?readiness(o):null;
+    $v('title').value=o.title||'';$v('company').value=o.company||'';$v('url').value=o.url||'';$v('description').value=o.description||'';
+    location.hash='assess';
+    if(r?.label==='Ready to Assess'){
+      if(r.mode==='description')$v('modeText')?.click();else $v('modeLink')?.click();
+      $v('assessmentStatus').className='notice';$v('assessmentStatus').textContent='Role loaded. Tap Assess Job to run the assessment.';
+      setTimeout(()=>$v('assessJob')?.scrollIntoView({behavior:'smooth',block:'center'}),150);
+      return;
+    }
+    if(originalAssessOpp)return originalAssessOpp(id);
+  };
+  const originalRows=window.rows;
+  window.rows=function(arr,track){
+    const desktop=originalRows?originalRows(arr,track):'';
+    if(!arr?.length)return desktop;
+    const cards=arr.map(j=>{const u=typeof safeUrl==='function'?safeUrl(j.url):'';return '<div class="mobile-job-card '+(j.stage==='No Longer Considering'?'inactive':'')+'"><div class="mobile-job-title">'+(typeof esc==='function'?esc(j.title):j.title)+'</div><div class="mobile-job-meta">'+(typeof esc==='function'?esc(j.company||''):j.company||'')+'</div><div class="mobile-job-grid"><div><strong>Overall</strong>'+j.overall+'%</div><div><strong>Decision</strong>'+(typeof esc==='function'?esc(j.recommendation):j.recommendation)+'</div><div><strong>Qualification</strong>'+j.scores.qual+'%</div><div><strong>Strategic</strong>'+j.scores.strategy+'%</div></div><div class="mobile-job-actions">'+(track?'<select onchange="setStage(\\\''+j.id+'\\\',this.value)">'+stageOptions(j.stage)+'</select>':'<div class="small">Stage: '+j.stage+'</div>')+(u?'<a class="btn secondary" target="_blank" rel="noopener" href="'+u+'">Open Job</a>':'')+'<button class="btn secondary" onclick="editJob(\\\''+j.id+'\\\')">Edit</button><button class="btn danger" onclick="deleteJob(\\\''+j.id+'\\\')">Delete</button></div></div>'}).join('');
+    return '<div class="desktop-table">'+desktop+'</div><div class="mobile-job-list">'+cards+'</div>';
+  };
+  if(typeof render==='function')render();
+})();
+<\/script>`;
+    html=html.replace('</body>',fixScript+'</body>');
+    document.open();document.write(html);document.close();
+  }catch(e){document.body.innerHTML='<div style="font-family:Arial,sans-serif;padding:24px"><h2>Career Strategy Hub could not load</h2><p>'+e.message+'</p><p><a href="/hub-v9.html?v=9">Open the previous version</a></p></div>'}
+})();
+</script>
+</body></html>
