@@ -2,50 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Career Strategy Hub — Daily Job Scout</title>
-<style>
-:root{--navy:#172033;--blue:#2847b8;--bg:#f6f8fb;--line:#e4e7ec;--muted:#667085;--green:#157347;--red:#b42318}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--navy)}
-.scout{max-width:1220px;margin:0 auto;padding:18px}.scout-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px}.scout-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.scout-head h2{margin:0 0 6px}.small{font-size:12px;color:var(--muted)}.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.new{background:#d1fadf;color:#05603a}.lane{background:#eef2ff;color:#3538cd}.jobs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.job{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.job h3{margin:7px 0 4px;font-size:17px}.meta{font-size:12px;color:var(--muted);margin-bottom:10px}.score{font-size:28px;font-weight:900}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}.primary{background:var(--blue);color:#fff}.secondary{background:#eef1f6;color:var(--navy)}.notice{background:#eef4ff;border:1px solid #c7d7fe;border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px}.empty{padding:18px;color:var(--muted);text-align:center}.frame-wrap{max-width:1220px;margin:0 auto 30px;padding:0 18px}iframe{border:0;width:100%;height:1500px;display:block;background:#fff;border-radius:15px}
-@media(max-width:700px){.scout,.frame-wrap{padding:10px}.jobs{grid-template-columns:1fr}.actions{display:grid;grid-template-columns:1fr}.btn{width:100%;text-align:center;min-height:44px}.scout-card{padding:14px}.scout-head{display:block}iframe{height:1800px;border-radius:10px}}
-</style>
+<title>Career Strategy Hub</title>
+<style>html,body{margin:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}</style>
 </head>
 <body>
-<section class="scout">
-  <div class="scout-card">
-    <div class="scout-head">
-      <div><h2>Daily Job Scout</h2><p style="margin:0">Fresh roles surfaced for your strategic career direction. Add promising ones to Job Opportunities for assessment and tracking.</p></div>
-      <div class="small" id="scanTime">Loading latest scan…</div>
-    </div>
-    <div class="notice"><strong>Scout priorities:</strong> enterprise strategy, transformation, workforce/HR technology strategy, employee experience, workforce intelligence, future of work/AI, product strategy, executive advisory, thought leadership, customer transformation, and strategic professional services. Tactical reporting/system-admin roles are deprioritized.</div>
-    <div id="dailyJobs" class="jobs"><div class="empty">Loading jobs…</div></div>
-  </div>
-</section>
-<div class="frame-wrap"><iframe id="hubFrame" src="/hub-v10.html?v=11" title="Career Strategy Hub"></iframe></div>
+<iframe id="hubFrame" src="/hub-v10.html?v=12" title="Career Strategy Hub"></iframe>
 <script>
 const frame=document.getElementById('hubFrame');
 let scoutJobs=[];
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function sameDay(a,b){return a===b}
 function todayLocal(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function scoutMarkup(){return `<div id="dailyScout" class="daily-scout"><div class="scout-head"><div><h3>Daily Job Scout</h3><p>Fresh roles surfaced for your strategic career direction. Add promising ones to Job Opportunities for assessment and tracking.</p></div><div class="small" id="scanTime">Loading latest scan…</div></div><div class="scout-notice"><strong>Scout priorities:</strong> enterprise strategy, transformation, workforce/HR technology strategy, employee experience, workforce intelligence, future of work/AI, product strategy, executive advisory, thought leadership, customer transformation, and strategic professional services. Tactical reporting/system-admin roles are deprioritized.</div><div id="dailyJobs" class="scout-jobs"><div class="empty">Loading jobs…</div></div></div>`}
+function installScout(){
+ const d=frame.contentDocument,w=frame.contentWindow;if(!d||!w)return;
+ if(d.getElementById('dailyScout'))return;
+ const style=d.createElement('style');style.textContent=`.daily-scout{margin:16px 0 18px;padding:16px;border:1px solid #c7d7fe;border-radius:14px;background:#f8f9ff}.scout-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.scout-head h3{margin:0 0 5px;font-size:20px}.scout-head p{margin:0}.scout-notice{background:#eef4ff;border:1px solid #c7d7fe;border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px}.scout-jobs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.scout-job{border:1px solid #e4e7ec;border-radius:12px;padding:14px;background:#fff}.scout-job h4{margin:7px 0 4px;font-size:17px}.scout-meta{font-size:12px;color:#667085;margin-bottom:10px}.scout-score{font-size:28px;font-weight:900}.scout-badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.scout-new{background:#d1fadf;color:#05603a}.scout-lane{background:#eef2ff;color:#3538cd}.scout-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}@media(max-width:700px){.daily-scout{padding:12px}.scout-head{display:block}.scout-jobs{grid-template-columns:1fr}.scout-actions{display:grid;grid-template-columns:1fr}.scout-actions .btn{width:100%;text-align:center}}`;
+ d.head.appendChild(style);
+ const opp=d.getElementById('opportunities');if(!opp)return;
+ const card=opp.querySelector('.card');if(!card)return;
+ const sectionhead=card.querySelector('.sectionhead');
+ const holder=d.createElement('div');holder.innerHTML=scoutMarkup();
+ const scout=holder.firstElementChild;
+ if(sectionhead) sectionhead.insertAdjacentElement('afterend',scout); else card.prepend(scout);
+ w.addScoutToHub=(id)=>addToHub(id);
+ loadFeed();
+}
 function renderJobs(data){
-  scoutJobs=data.jobs||[];
-  document.getElementById('scanTime').textContent=data.generatedAt?'Last scan: '+new Date(data.generatedAt).toLocaleString():'Latest scan';
-  const holder=document.getElementById('dailyJobs');
-  if(!scoutJobs.length){holder.innerHTML='<div class="empty">No strong new matches in the latest scan.</div>';return}
-  holder.innerHTML=scoutJobs.sort((a,b)=>(b.scoutScore||0)-(a.scoutScore||0)).map(j=>'<div class="job"><div><span class="badge lane">'+esc(j.fitLane||'Strategic fit')+'</span> '+(sameDay(j.foundDate,todayLocal())?'<span class="badge new">New Today</span>':'')+'</div><h3>'+esc(j.title)+'</h3><div class="meta">'+esc(j.company)+' · '+esc(j.location||'')+(j.salary?' · '+esc(j.salary):'')+'</div><div class="score">'+esc(j.scoutScore||'—')+'%</div><div class="small">Scout fit</div><p>'+esc(j.summary||'')+'</p><div class="actions"><a class="btn secondary" target="_blank" rel="noopener" href="'+esc(j.url||'#')+'">Open Job</a><button class="btn primary" onclick="addToHub(\''+esc(j.id)+'\')">Add to Opportunities</button></div></div>').join('');
+ const d=frame.contentDocument;if(!d)return;scoutJobs=data.jobs||[];
+ const scan=d.getElementById('scanTime'),holder=d.getElementById('dailyJobs');if(!holder)return;
+ if(scan)scan.textContent=data.generatedAt?'Last scan: '+new Date(data.generatedAt).toLocaleString():'Latest scan';
+ if(!scoutJobs.length){holder.innerHTML='<div class="empty">No strong new matches in the latest scan.</div>';return}
+ holder.innerHTML=scoutJobs.sort((a,b)=>(b.scoutScore||0)-(a.scoutScore||0)).map(j=>'<div class="scout-job"><div><span class="scout-badge scout-lane">'+esc(j.fitLane||'Strategic fit')+'</span> '+(j.foundDate===todayLocal()?'<span class="scout-badge scout-new">New Today</span>':'')+'</div><h4>'+esc(j.title)+'</h4><div class="scout-meta">'+esc(j.company)+' · '+esc(j.location||'')+(j.salary?' · '+esc(j.salary):'')+'</div><div class="scout-score">'+esc(j.scoutScore||'—')+'%</div><div class="small">Scout fit</div><p>'+esc(j.summary||'')+'</p><div class="scout-actions"><a class="btn secondary" target="_blank" rel="noopener" href="'+esc(j.url||'#')+'">Open Job</a><button class="btn primary" onclick="addScoutToHub(\''+esc(j.id)+'\')">Add to Opportunities</button></div></div>').join('');
 }
-async function loadFeed(){try{const r=await fetch('/data/daily-jobs.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error();renderJobs(await r.json())}catch{document.getElementById('dailyJobs').innerHTML='<div class="empty">Daily Scout feed is temporarily unavailable.</div>';document.getElementById('scanTime').textContent='Could not load latest scan'}}
+async function loadFeed(){try{const r=await fetch('/data/daily-jobs.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error();renderJobs(await r.json())}catch{const d=frame.contentDocument;if(d){const h=d.getElementById('dailyJobs'),s=d.getElementById('scanTime');if(h)h.innerHTML='<div class="empty">Daily Scout feed is temporarily unavailable.</div>';if(s)s.textContent='Could not load latest scan'}}}
 function addToHub(id){
-  const j=scoutJobs.find(x=>x.id===id);if(!j)return;
-  const d=frame.contentDocument,w=frame.contentWindow;
-  if(!d){alert('The hub is still loading. Try again in a moment.');return}
-  const title=d.getElementById('oppTitle'),company=d.getElementById('oppCompany'),url=d.getElementById('oppUrl'),status=d.getElementById('oppStatus'),desc=d.getElementById('oppDescription'),save=d.getElementById('saveOpp');
-  if(!title||!company||!url||!save){alert('The hub is still loading. Try again in a moment.');return}
-  title.value=j.title||'';company.value=j.company||'';url.value=j.url||'';if(status)status.value='To Review';if(desc)desc.value='';save.click();
-  frame.scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(()=>{try{w.location.hash='opportunities'}catch{}},200);
+ const j=scoutJobs.find(x=>x.id===id);if(!j)return;const d=frame.contentDocument,w=frame.contentWindow;if(!d||!w)return;
+ const existing=Array.isArray(w.opps)?w.opps.find(o=>(o.url&&o.url===j.url)||(o.title===j.title&&o.company===j.company)):null;if(existing){alert('This role is already in Job Opportunities.');w.location.hash='opportunities';return}
+ const title=d.getElementById('oppTitle'),company=d.getElementById('oppCompany'),url=d.getElementById('oppUrl'),status=d.getElementById('oppStatus'),desc=d.getElementById('oppDescription'),save=d.getElementById('saveOpp');
+ if(!title||!company||!url||!save){alert('The hub is still loading. Try again in a moment.');return}
+ title.value=j.title||'';company.value=j.company||'';url.value=j.url||'';if(status)status.value='To Review';if(desc)desc.value='';save.click();w.location.hash='opportunities';
 }
-loadFeed();
+frame.addEventListener('load',()=>setTimeout(installScout,300));
 </script>
 </body></html>
