@@ -6,19 +6,18 @@
 <style>html,body{margin:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}</style>
 </head>
 <body>
-<iframe id="hubFrame" src="/hub-v10.html?v=13" title="Career Strategy Hub"></iframe>
+<iframe id="hubFrame" src="/hub-v10.html?v=14" title="Career Strategy Hub"></iframe>
 <script>
 const frame=document.getElementById('hubFrame');
 let scoutJobs=[];
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function todayLocal(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function isAggregator(url){try{const u=new URL(url||'');const h=u.hostname.toLowerCase(),p=u.pathname.toLowerCase();return h==='to.indeed.com'||h.includes('ziprecruiter.com')||h.includes('linkedin.com')||p.includes('/careers/apply')||/\/apply\/?$/.test(p)}catch{return true}}
-function scoutReadiness(j){const desc=(j.jobDescription||'').trim();if(desc.length>=200)return{label:'Assess by Description',cls:'scout-desc',ready:true,mode:'description'};if(j.assessableUrl===true&&!isAggregator(j.url))return{label:'Verified Job Page',cls:'scout-verified',ready:true,mode:'url'};return{label:'Needs Revalidation',cls:'scout-needs',ready:false}}
-function scoutMarkup(){return `<div id="dailyScout" class="daily-scout"><div class="scout-head"><div><h3>Daily Job Scout</h3><p>Fresh roles surfaced for your strategic career direction. Add only verified or description-backed roles to Job Opportunities.</p></div><div class="small" id="scanTime">Loading latest scan…</div></div><div class="scout-notice"><strong>Scout priorities:</strong> enterprise strategy, transformation, workforce/HR technology strategy, employee experience, workforce intelligence, future of work/AI, product strategy, executive advisory, thought leadership, customer transformation, and strategic professional services. Tactical reporting/system-admin roles are deprioritized.</div><div id="dailyJobs" class="scout-jobs"><div class="empty">Loading jobs…</div></div></div>`}
+function scoutReadiness(j){const desc=(j.jobDescription||'').trim();if(desc.length>=1200)return{label:'Ready — Description Captured',cls:'scout-desc',ready:true,mode:'description'};return{label:'Needs Revalidation',cls:'scout-needs',ready:false}}
+function scoutMarkup(){return `<div id="dailyScout" class="daily-scout"><div class="scout-head"><div><h3>Daily Job Scout</h3><p>Fresh roles surfaced for your strategic career direction. Scout roles are only assessable when a substantial job description has been captured.</p></div><div class="small" id="scanTime">Loading latest scan…</div></div><div class="scout-notice"><strong>Scout priorities:</strong> enterprise strategy, transformation, workforce/HR technology strategy, employee experience, workforce intelligence, future of work/AI, product strategy, executive advisory, thought leadership, customer transformation, and strategic professional services. Tactical reporting/system-admin roles are deprioritized.</div><div id="dailyJobs" class="scout-jobs"><div class="empty">Loading jobs…</div></div></div>`}
 function installScout(){
  const d=frame.contentDocument,w=frame.contentWindow;if(!d||!w)return;
  if(d.getElementById('dailyScout'))return;
- const style=d.createElement('style');style.textContent=`.daily-scout{margin:16px 0 18px;padding:16px;border:1px solid #c7d7fe;border-radius:14px;background:#f8f9ff}.scout-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.scout-head h3{margin:0 0 5px;font-size:20px}.scout-head p{margin:0}.scout-notice{background:#eef4ff;border:1px solid #c7d7fe;border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px}.scout-jobs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.scout-job{border:1px solid #e4e7ec;border-radius:12px;padding:14px;background:#fff}.scout-job h4{margin:7px 0 4px;font-size:17px}.scout-meta{font-size:12px;color:#667085;margin-bottom:10px}.scout-score{font-size:28px;font-weight:900}.scout-badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.scout-new{background:#d1fadf;color:#05603a}.scout-lane{background:#eef2ff;color:#3538cd}.scout-verified{background:#d1fadf;color:#05603a}.scout-desc{background:#e0f2fe;color:#075985}.scout-needs{background:#fef0c7;color:#7a2e0e}.scout-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.scout-actions button:disabled{opacity:.55;cursor:not-allowed}@media(max-width:700px){.daily-scout{padding:12px}.scout-head{display:block}.scout-jobs{grid-template-columns:1fr}.scout-actions{display:grid;grid-template-columns:1fr}.scout-actions .btn{width:100%;text-align:center}}`;
+ const style=d.createElement('style');style.textContent=`.daily-scout{margin:16px 0 18px;padding:16px;border:1px solid #c7d7fe;border-radius:14px;background:#f8f9ff}.scout-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.scout-head h3{margin:0 0 5px;font-size:20px}.scout-head p{margin:0}.scout-notice{background:#eef4ff;border:1px solid #c7d7fe;border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px}.scout-jobs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.scout-job{border:1px solid #e4e7ec;border-radius:12px;padding:14px;background:#fff}.scout-job h4{margin:7px 0 4px;font-size:17px}.scout-meta{font-size:12px;color:#667085;margin-bottom:10px}.scout-score{font-size:28px;font-weight:900}.scout-badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.scout-new{background:#d1fadf;color:#05603a}.scout-lane{background:#eef2ff;color:#3538cd}.scout-desc{background:#d1fadf;color:#05603a}.scout-needs{background:#fef0c7;color:#7a2e0e}.scout-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.scout-actions button:disabled{opacity:.55;cursor:not-allowed}@media(max-width:700px){.daily-scout{padding:12px}.scout-head{display:block}.scout-jobs{grid-template-columns:1fr}.scout-actions{display:grid;grid-template-columns:1fr}.scout-actions .btn{width:100%;text-align:center}}`;
  d.head.appendChild(style);
  const opp=d.getElementById('opportunities');if(!opp)return;
  const card=opp.querySelector('.card');if(!card)return;
@@ -29,21 +28,30 @@ function installScout(){
  w.addScoutToHub=(id)=>addToHub(id);
  loadFeed();
 }
+function getInnerOpps(){try{return frame.contentWindow.eval('opps')}catch{return[]}}
+function saveInner(){try{frame.contentWindow.eval('saveAll();render()')}catch{}}
+function syncExistingScoutDescriptions(){
+ const opps=getInnerOpps();let changed=false;
+ for(const j of scoutJobs){const desc=(j.jobDescription||'').trim();if(desc.length<1200)continue;const o=opps.find(x=>(x.title===j.title&&x.company===j.company)||(x.url&&j.url&&x.url===j.url));if(o&&(!o.description||o.description.trim().length<1200)){o.description=desc;o.url=j.url||o.url;o.note=(o.note?o.note+' · ':'')+'Full scout job description synced';changed=true}}
+ if(changed)saveInner();
+}
 function renderJobs(data){
  const d=frame.contentDocument;if(!d)return;scoutJobs=data.jobs||[];
  const scan=d.getElementById('scanTime'),holder=d.getElementById('dailyJobs');if(!holder)return;
  if(scan)scan.textContent=data.generatedAt?'Last scan: '+new Date(data.generatedAt).toLocaleString():'Latest scan';
  if(!scoutJobs.length){holder.innerHTML='<div class="empty">No strong new matches in the latest scan.</div>';return}
  holder.innerHTML=scoutJobs.sort((a,b)=>(b.scoutScore||0)-(a.scoutScore||0)).map(j=>{const r=scoutReadiness(j);return '<div class="scout-job"><div><span class="scout-badge scout-lane">'+esc(j.fitLane||'Strategic fit')+'</span> '+(j.foundDate===todayLocal()?'<span class="scout-badge scout-new">New Today</span> ':'')+'<span class="scout-badge '+r.cls+'">'+r.label+'</span></div><h4>'+esc(j.title)+'</h4><div class="scout-meta">'+esc(j.company)+' · '+esc(j.location||'')+(j.salary?' · '+esc(j.salary):'')+'</div><div class="scout-score">'+esc(j.scoutScore||'—')+'%</div><div class="small">Scout fit</div><p>'+esc(j.summary||'')+'</p><div class="scout-actions">'+(j.url?'<a class="btn secondary" target="_blank" rel="noopener" href="'+esc(j.url)+'">Open Job</a>':'')+'<button class="btn primary" onclick="addScoutToHub(\''+esc(j.id)+'\')" '+(r.ready?'':'disabled')+'>'+(r.ready?'Add to Opportunities':'Needs Revalidation')+'</button></div></div>'}).join('');
+ syncExistingScoutDescriptions();
 }
 async function loadFeed(){try{const r=await fetch('/data/daily-jobs.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error();renderJobs(await r.json())}catch{const d=frame.contentDocument;if(d){const h=d.getElementById('dailyJobs'),s=d.getElementById('scanTime');if(h)h.innerHTML='<div class="empty">Daily Scout feed is temporarily unavailable.</div>';if(s)s.textContent='Could not load latest scan'}}}
 function addToHub(id){
- const j=scoutJobs.find(x=>x.id===id);if(!j)return;const r=scoutReadiness(j);if(!r.ready){alert('This scout role still needs a verified employer job page or a complete job description before it can be assessed.');return}
+ const j=scoutJobs.find(x=>x.id===id);if(!j)return;const r=scoutReadiness(j);if(!r.ready){alert('This scout role does not yet have enough captured job-description content to assess reliably.');return}
  const d=frame.contentDocument,w=frame.contentWindow;if(!d||!w)return;
- const existing=Array.isArray(w.opps)?w.opps.find(o=>(o.url&&j.url&&o.url===j.url)||(o.title===j.title&&o.company===j.company)):null;if(existing){alert('This role is already in Job Opportunities.');w.location.hash='opportunities';return}
+ const opps=getInnerOpps();const existing=opps.find(o=>(o.url&&j.url&&o.url===j.url)||(o.title===j.title&&o.company===j.company));
+ if(existing){existing.description=j.jobDescription||'';existing.url=j.url||existing.url;existing.note=(existing.note?existing.note+' · ':'')+'Full scout job description synced';saveInner();alert('This role was already in Job Opportunities. I updated it with the full job description so it can be assessed by description.');w.location.hash='opportunities';return}
  const title=d.getElementById('oppTitle'),company=d.getElementById('oppCompany'),url=d.getElementById('oppUrl'),status=d.getElementById('oppStatus'),desc=d.getElementById('oppDescription'),save=d.getElementById('saveOpp');
  if(!title||!company||!url||!save){alert('The hub is still loading. Try again in a moment.');return}
- title.value=j.title||'';company.value=j.company||'';url.value=r.mode==='url'?(j.url||''):(j.url||'');if(status)status.value='To Review';if(desc)desc.value=r.mode==='description'?(j.jobDescription||''):'';save.click();w.location.hash='opportunities';
+ title.value=j.title||'';company.value=j.company||'';url.value=j.url||'';if(status)status.value='To Review';if(desc)desc.value=j.jobDescription||'';save.click();w.location.hash='opportunities';
 }
 frame.addEventListener('load',()=>setTimeout(installScout,300));
 </script>
