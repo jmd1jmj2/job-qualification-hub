@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-09-08T14:53:00-05:00",
+  "scanLabel": "Initial Daily Job Scout Seed",
+  "jobs": [
+    {
+      "id": "hilton-sr-director-hr-tech-products-20260908",
+      "title": "Senior Director, HR Technology Products",
+      "company": "Hilton",
+      "location": "Remote / McLean, VA",
+      "salary": "$190,000 - $255,000 a year",
+      "url": "https://to.indeed.com/aafzg8lz8hf6",
+      "fitLane": "HR Technology Strategy / Product Leadership",
+      "scoutScore": 94,
+      "summary": "Senior enterprise HR technology product leadership with virtual/remote work and compensation that can compete with your current package. Strong fit for the move from HRIS operations into strategic technology/product leadership.",
+      "foundDate": "2026-09-08",
+      "source": "Indeed"
+    },
+    {
+      "id": "modmed-enterprise-transformation-20260908",
+      "title": "Director, Enterprise Transformation",
+      "company": "Modernizing Medicine, Inc.",
+      "location": "Remote",
+      "salary": "Not listed",
+      "url": "https://to.indeed.com/aazb7fxw867p",
+      "fitLane": "Enterprise Transformation",
+      "scoutScore": 92,
+      "summary": "Enterprise transformation leadership at a technology company, closely aligned to the strategic transformation direction you want and less likely to pigeonhole you into reporting or systems administration.",
+      "foundDate": "2026-09-08",
+      "source": "Indeed"
+    },
+    {
+      "id": "cdw-principal-advisory-servicenow-20260908",
+      "title": "Principal Advisory Consultant - ServiceNow (CMA)",
+      "company": "CDW",
+      "location": "Remote",
+      "salary": "$168,000 - $240,000 a year",
+      "url": "https://to.indeed.com/aa6n46vkhrbt",
+      "fitLane": "Executive Advisory / Transformation Consulting",
+      "scoutScore": 90,
+      "summary": "Executive-level advisory role aligning business strategy, enterprise architecture, governance, and transformation programs. Strong adjacency to your executive-partner and cross-functional transformation experience.",
+      "foundDate": "2026-09-08",
+      "source": "Indeed"
+    },
+    {
+      "id": "servicenow-principal-csm-veza-20260908",
+      "title": "Principal Customer Success Manager - Veza",
+      "company": "ServiceNow",
+      "location": "Washington, DC",
+      "salary": "$148,400 - $259,700 a year",
+      "url": "https://to.indeed.com/aadywzlj8sry",
+      "fitLane": "Strategic Customer Success / Customer Transformation",
+      "scoutScore": 86,
+      "summary": "Principal-level strategic customer leadership with strong enterprise technology exposure and compensation upside. Worth assessing for executive customer-transformation scope and location expectations.",
+      "foundDate": "2026-09-08",
+      "source": "Indeed"
+    },
+    {
+      "id": "kyndryl-assoc-dir-experience-strategy-20260908",
+      "title": "Associate Director, Experience Strategy, Vital US",
+      "company": "Kyndryl",
+      "location": "New York, NY",
+      "salary": "$143,640 - $327,600 a year",
+      "url": "https://to.indeed.com/aalnn778hxdn",
+      "fitLane": "Experience Strategy",
+      "scoutScore": 85,
+      "summary": "Experience strategy role at an enterprise technology company with meaningful compensation upside. Strategic fit is strong; work arrangement and exact experience-design expectations need assessment.",
+      "foundDate": "2026-09-08",
+      "source": "Indeed"
+    }
+  ]
+}
