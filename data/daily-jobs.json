@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-09-08T15:25:00-05:00",
-  "scanLabel": "Daily Job Scout - Link Validation Fix",
+  "scanLabel": "Daily Job Scout - Description Backfill",
   "jobs": [
     {
       "id": "hilton-sr-director-hr-tech-products-20260908",
@@ -39,8 +39,8 @@
       "location": "Remote - USA",
       "salary": "$168,000 - $240,000 a year",
       "url": "https://cdw.wd5.myworkdayjobs.com/Careers/job/Principal-Advisory-Consultant---ServiceNow--CMA--ePro_R26_00002298",
-      "assessableUrl": true,
-      "jobDescription": "",
+      "assessableUrl": false,
+      "jobDescription": "Job Description — Principal Advisory Consultant - ServiceNow (CMA), CDW. Role summary: This principal-level advisory position provides executive-level architectural leadership across ServiceNow transformation programs. The role aligns business strategy, enterprise architecture, governance, delivery teams, and executive stakeholders around a unified implementation vision. It partners with sales and digital-integration teams and works directly with clients to build trusted-advisor relationships, understand business challenges, and recommend ServiceNow-based solutions that produce measurable business outcomes. Responsibilities include researching current and emerging technologies; evaluating alternatives and presenting recommendations to executive leadership; preparing white papers and executive presentations; presenting in client and industry forums; identifying and communicating business value, ROI, and time-to-value; supporting account planning; developing strategic partner relationships; mentoring colleagues; and helping shape long-range roadmaps, governance models, and delivery plans. The role also applies deep technical expertise to service offerings, go-to-market strategy, business planning, and growth of advisory, professional, and managed services. Qualifications: bachelor’s degree in a technology-related field plus 7+ years of consulting experience, or 10+ years of equivalent consulting experience. ServiceNow Certified Technical Architect or Certified Master Architect certification is required. Candidates are expected to have substantial experience with executive stakeholders, enterprise architecture, platform strategy, governance frameworks, roadmap development, technical and strategic communication, risk assessment, long-range project planning, mentoring, facilitation, and executive-level documentation. The role is remote in the United States. Published pay range is $168,000 to $240,000 depending on experience and skill set, with a 10% annual bonus target. CDW also emphasizes AI fluency, curiosity, and responsible use of emerging technology.",
       "fitLane": "Executive Advisory / Transformation Consulting",
       "scoutScore": 90,
       "summary": "Executive-level advisory role aligning business strategy, enterprise architecture, governance, and transformation programs. Strong adjacency to your executive-partner and cross-functional transformation experience.",
@@ -54,8 +54,8 @@
       "location": "Remote / Washington, DC",
       "salary": "$133,600 - $233,800 base plus equity and incentive",
       "url": "https://careers.servicenow.com/jobs/744000143852989/principal-customer-success-manager-veza/",
-      "assessableUrl": true,
-      "jobDescription": "",
+      "assessableUrl": false,
+      "jobDescription": "Job Description — Principal Customer Success Manager - Veza, ServiceNow. Role scope: Own a portfolio of roughly 8 to 10 strategic enterprise customers in a high-touch model focused on depth of partnership rather than volume. Engage regularly with CIOs, CISOs, and senior technology leaders, and directly influence renewal outcomes, expansion opportunities, executive satisfaction, and long-term value realization. Responsibilities include defining success criteria for each account, aligning internal resources to customer outcomes, driving customers from deployment to durable operational reliance, orchestrating cross-functional support, building trusted-advisor relationships with senior executives, conducting executive business reviews, connecting platform capabilities to security, regulatory-readiness, and resilience priorities, and guiding executive decision-making. The role develops and governs multi-year success plans, translates product capabilities into quantified business impact, monitors adoption and leading indicators of account health, identifies material risk well ahead of renewal cycles, and coordinates recovery actions when required. It also leads integrated account planning across Sales, Solution Engineering, Professional Services, Support, Product, and partners, establishes governance frameworks, removes execution obstacles, and maintains accountability in complex matrixed environments. Qualifications: 12+ years managing complex enterprise customers in SaaS or platform organizations; demonstrated ownership of large, multi-threaded accounts with executive visibility; proven success with renewals, expansion, and long-term customer value; strong business and financial acumen; executive-level communication skills; comfort with ambiguity and high-stakes situations; and a track record of identifying and resolving risk proactively. Experience with identity, security, governance, privileged access, access reviews, SOX, ISO, NIST, SOC 2, Zero Trust, or security transformation is helpful but not required. The role is listed as flexible or remote. Published base pay is $133,600 to $233,800, plus equity when applicable, variable or incentive compensation, and benefits.",
       "fitLane": "Strategic Customer Success / Customer Transformation",
       "scoutScore": 86,
       "summary": "Principal-level strategic customer leadership with enterprise technology exposure, executive engagement, and compensation upside. Worth assessing for customer-transformation scope and fit.",
