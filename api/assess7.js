@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assess5 from './assess5.js';
 
-const VALIDATOR_VERSION = '2026-09-17-v7-scout-description-fallback';
+const VALIDATOR_VERSION = '2026-09-17-v8-scout-title-company-fallback';
 
 function looksLikeRealPosting(text='') {
   const t = String(text).toLowerCase();
@@ -15,24 +15,45 @@ function normalizeUrl(value='') {
   try {
     const u = new URL(String(value).trim());
     u.hash = '';
-    return u.href.replace(/\/$/, '');
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','source','src'].forEach(k=>u.searchParams.delete(k));
+    return (u.origin + u.pathname + (u.searchParams.toString() ? '?' + u.searchParams.toString() : '')).replace(/\/$/, '').toLowerCase();
   } catch {
-    return String(value || '').trim().replace(/\/$/, '');
+    return String(value || '').trim().replace(/\/$/, '').toLowerCase();
   }
 }
 
-function getScoutDescription(jobUrl='') {
-  if (!jobUrl) return '';
+function normText(v='') {
+  return String(v || '').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function loadScoutJobs() {
   try {
     const raw = fs.readFileSync(new URL('../data/daily-jobs.json', import.meta.url), 'utf8');
-    const feed = JSON.parse(raw);
-    const target = normalizeUrl(jobUrl);
-    const match = (feed.jobs || []).find(j => normalizeUrl(j.url) === target);
-    const desc = String(match?.jobDescription || '').trim();
-    return looksLikeRealPosting(desc) ? desc : '';
+    return JSON.parse(raw).jobs || [];
   } catch {
-    return '';
+    return [];
   }
+}
+
+function getScoutDescription({ jobUrl='', roleTitle='', company='' }={}) {
+  const jobs = loadScoutJobs();
+  const targetUrl = normalizeUrl(jobUrl);
+  const t = normText(roleTitle);
+  const c = normText(company);
+
+  let match = null;
+  if (targetUrl) {
+    match = jobs.find(j => normalizeUrl(j.url) === targetUrl);
+  }
+  if (!match && t && c) {
+    match = jobs.find(j => normText(j.title) === t && normText(j.company) === c);
+  }
+  if (!match && t) {
+    match = jobs.find(j => normText(j.title) === t);
+  }
+
+  const desc = String(match?.jobDescription || '').trim();
+  return looksLikeRealPosting(desc) ? desc : '';
 }
 
 export default async function handler(req, res) {
@@ -44,10 +65,12 @@ export default async function handler(req, res) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const jobUrl = String(body.jobUrl || body.url || '').trim();
+    const roleTitle = String(body.roleTitle || body.title || '').trim();
+    const company = String(body.company || '').trim();
     let pasted = String(body.jobDescription || body.description || '').trim();
 
-    if (!pasted && jobUrl) {
-      pasted = getScoutDescription(jobUrl);
+    if (!pasted) {
+      pasted = getScoutDescription({ jobUrl, roleTitle, company });
     }
 
     if (pasted) {
@@ -82,7 +105,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const pageResp = await fetch('https://r.jina.ai/' + jobUrl, { headers: { 'User-Agent': 'CareerStrategyHub/7.0' } });
+    const pageResp = await fetch('https://r.jina.ai/' + jobUrl, { headers: { 'User-Agent': 'CareerStrategyHub/8.0' } });
     if (!pageResp.ok) {
       return res.status(422).json({ error: 'I could not read that job page. Paste the full job description instead.', stage: 'posting_validation', validatorVersion: VALIDATOR_VERSION });
     }
