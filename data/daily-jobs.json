@@ -1,5 +1,21 @@
 {
-  "generatedAt": "2026-09-09T08:40:51-05:00",
-  "scanLabel": "Daily Job Scout - 2026-09-09",
-  "jobs": []
+  "generatedAt": "2026-09-17T09:55:00-05:00",
+  "scanLabel": "Manual repair - Deloitte 359862",
+  "jobs": [
+    {
+      "id": "deloitte-workforce-dimensions-transformation-sr-manager-359862",
+      "title": "Workforce Dimensions Transformation Senior Manager",
+      "company": "Deloitte",
+      "location": "United States - multiple locations",
+      "salary": "$180,200 - $355,100 base, plus possible discretionary annual incentive",
+      "url": "https://apply.deloitte.com/en_US/careers/InviteToApply?jobId=359862",
+      "assessableUrl": false,
+      "jobDescription": "Job Description - Workforce Dimensions Transformation Senior Manager, Deloitte, requisition 359862. Position summary: Deloitte's Human Capital practice is focused on helping organizations redesign work, workforce, and operating models as AI, automation, and digital transformation change how enterprises create value. Responsibilities include leading cross-functional teams that develop workforce and organization strategies; aligning human capability, machine capacity, and business goals; advising clients on workforce strategy, work design, operating model design, organization effectiveness, skills, workforce analytics, AI impacts, job architecture, compensation, and change; structuring complex client problems; developing scenarios and recommendations for senior leaders; guiding leadership alignment and sustainable behavior change; and contributing to business development, solution development, thought leadership, and mentoring. Qualifications include a bachelor's degree; 8+ years of relevant workforce strategy, work design, operating model, organization design, workforce analytics, skills, or change-management experience; 4+ years leading related projects and teams; 5+ years supporting business development and pursuit strategy; 2+ years supporting AI, automation, or digital transformation; at least 1 year advising on workforce or organization implications of AI; and ability to travel about 50%. Consulting, staff leadership, facilitation, project management, analytics, and executive communication experience are preferred. Published base range is $180,200 to $355,100, with potential discretionary annual incentive. Recruiting is scheduled to close September 26, 2026.",
+      "fitLane": "Workforce Strategy / AI Transformation / Executive Advisory",
+      "scoutScore": 94,
+      "summary": "Strong alignment to workforce strategy, AI-enabled transformation, executive advisory, organization design, thought leadership, and enterprise consulting. Main tradeoffs are the 50% travel expectation and business-development depth.",
+      "foundDate": "2026-09-17",
+      "source": "Deloitte / public posting"
+    }
+  ]
 }
