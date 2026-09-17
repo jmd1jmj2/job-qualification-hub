@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Career Strategy Hub</title>
+<style>html,body{margin:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}</style>
+</head>
+<body>
+<iframe id="hubFrame" src="/hub-v10.html?v=16" title="Career Strategy Hub"></iframe>
+<script>
+const frame=document.getElementById('hubFrame');
+let scoutJobs=[];
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+function getInnerOpps(){try{return frame.contentWindow.eval('opps')}catch{return[]}}
+function saveInner(){try{frame.contentWindow.eval('saveAll();render()')}catch{}}
+function todayLocal(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function findScout(title,company,url){return scoutJobs.find(j=>(norm(j.title)===norm(title)&&norm(j.company)===norm(company))||(url&&j.url===url))}
+function scoutReady(j){return !!j&&(j.jobDescription||'').trim().length>=1200}
+function bestDescription(title,company,url,current=''){
+  let d=(current||'').trim();if(d.length>=1200)return d;
+  const o=getInnerOpps().find(x=>(norm(x.title)===norm(title)&&norm(x.company)===norm(company))||(url&&x.url===url));
+  if(o&&(o.description||'').trim().length>=1200)return o.description.trim();
+  const s=findScout(title,company,url);if(scoutReady(s))return s.jobDescription.trim();
+  return d;
+}
+function applyAssessment(d,data){const a=data.assessment||data;if(!a||!a.scores)throw new Error('Assessment returned without usable scoring data.');
+  if(a.roleTitle)d.getElementById('title').value=a.roleTitle;if(a.company)d.getElementById('company').value=a.company;if(a.location||a.workStyle)d.getElementById('location').value=[a.location,a.workStyle].filter(Boolean).join(' — ');
+  if(a.travelPercent!=null)d.getElementById('travel').value=a.travelPercent;if(a.publishedBaseMin!=null)d.getElementById('baseMin').value=a.publishedBaseMin;if(a.publishedBaseMax!=null)d.getElementById('baseMax').value=a.publishedBaseMax;if(a.targetBonusPercent!=null)d.getElementById('bonus').value=a.targetBonusPercent;if(a.equityOrRsuEstimate!=null)d.getElementById('equity').value=a.equityOrRsuEstimate;
+  d.getElementById('sQual').value=a.scores.qualification??80;d.getElementById('sStrategy').value=a.scores.strategicCareer??85;d.getElementById('sLeadership').value=a.scores.leadershipScope??85;d.getElementById('sComp').value=a.scores.compensation??80;d.getElementById('sDiff').value=a.scores.differentiation??85;d.getElementById('sLife').value=a.scores.lifestyle??80;d.getElementById('risk').value=[a.gapSeverity,a.riskSummary].filter(Boolean).join(' — ');d.getElementById('why').value=a.whyWorthIt||'';
+  try{frame.contentWindow.eval('updateLive()')}catch{}if(a.recommendation)d.getElementById('recommendation').value=a.recommendation;
+}
+async function robustAssess(){
+  const d=frame.contentDocument;if(!d)return;
+  const status=d.getElementById('assessmentStatus'),btn=d.getElementById('assessJob');
+  const title=(d.getElementById('title').value||'').trim(),company=(d.getElementById('company').value||'').trim(),url=(d.getElementById('url').value||'').trim();
+  const scout=findScout(title,company,url);let desc=bestDescription(title,company,url,d.getElementById('description').value||'');
+  if(scout&&!scoutReady(scout)&&desc.length<1200){status.className='error';status.textContent='Needs Revalidation: this Daily Job Scout role does not yet have a complete captured job description, so the hub will not send its URL for assessment.';return}
+  if(desc.length>=1200){d.getElementById('description').value=desc;d.getElementById('modeText')?.click()}
+  if(!url&&desc.length<1200){status.className='error';status.textContent='This role does not yet have enough job-posting content to assess. Paste the full job description first.';return}
+  status.className='notice';status.textContent=desc.length>=1200?'Assessing from captured job description…':'Assessing from job link…';btn.disabled=true;btn.textContent='Assessing…';
+  try{
+    const payload=desc.length>=1200?{jobDescription:desc,roleTitle:title,company}:{jobUrl:url,roleTitle:title,company};
+    const r=await fetch('/api/assess',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'});const raw=await r.text();let data;try{data=JSON.parse(raw)}catch{throw new Error('Assessment service returned an unreadable response.')}
+    if(!r.ok)throw new Error(data.error||'Assessment failed');applyAssessment(d,data);status.className='success';status.textContent='Assessment complete'+(data.assessorVersion?' · '+data.assessorVersion:'')+'. Review the scores and save the role.';
+  }catch(e){status.className='error';status.textContent='Assessment could not complete: '+e.message}finally{btn.disabled=false;btn.textContent='Assess Job'}
+}
+function installAssessmentFix(){
+  const d=frame.contentDocument,w=frame.contentWindow;if(!d||!w)return;
+  const btn=d.getElementById('assessJob');if(btn)btn.onclick=robustAssess;
+  w.assessOpp=function(id){const o=getInnerOpps().find(x=>x.id===id);if(!o)return;const scout=findScout(o.title,o.company,o.url);const desc=bestDescription(o.title,o.company,o.url,o.description||'');
+    d.getElementById('title').value=o.title||'';d.getElementById('company').value=o.company||'';d.getElementById('url').value=o.url||'';d.getElementById('description').value=desc||o.description||'';w.location.hash='assess';
+    if(scout&&!scoutReady(scout)&&desc.length<1200){d.getElementById('assessmentStatus').className='error';d.getElementById('assessmentStatus').textContent='Needs Revalidation: Daily Job Scout has not captured enough posting content for this role yet.';return}
+    if(desc.length>=1200){o.description=desc;saveInner();d.getElementById('modeText')?.click();d.getElementById('assessmentStatus').className='notice';d.getElementById('assessmentStatus').textContent='Full job description loaded. Tap Assess Job.';}else{d.getElementById('modeLink')?.click();d.getElementById('assessmentStatus').className='notice';d.getElementById('assessmentStatus').textContent='Role loaded. Tap Assess Job.';}
+  };
+}
+function installScout(){
+  const d=frame.contentDocument,w=frame.contentWindow;if(!d||!w||d.getElementById('dailyScout'))return;
+  const style=d.createElement('style');style.textContent='.daily-scout{margin:16px 0 18px;padding:16px;border:1px solid #c7d7fe;border-radius:14px;background:#f8f9ff}.scout-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.scout-head h3{margin:0 0 5px}.scout-jobs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.scout-job{border:1px solid #e4e7ec;border-radius:12px;padding:14px;background:#fff}.scout-badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.scout-ok{background:#d1fadf;color:#05603a}.scout-no{background:#fef0c7;color:#7a2e0e}.scout-lane{background:#eef2ff;color:#3538cd}.scout-new{background:#d1fadf;color:#05603a}.scout-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:700px){.scout-jobs{grid-template-columns:1fr}.scout-actions{display:grid}.scout-actions .btn{width:100%}}';d.head.appendChild(style);
+  const card=d.getElementById('opportunities')?.querySelector('.card');if(!card)return;const sec=card.querySelector('.sectionhead');const box=d.createElement('div');box.id='dailyScout';box.className='daily-scout';box.innerHTML='<div class="scout-head"><div><h3>Daily Job Scout</h3><p>Fresh roles surfaced for your strategic career direction.</p></div><div class="small" id="scanTime">Loading latest scan…</div></div><div id="dailyJobs" class="scout-jobs"><div class="empty">Loading jobs…</div></div>';if(sec)sec.insertAdjacentElement('afterend',box);else card.prepend(box);w.addScoutToHub=id=>addToHub(id);loadFeed();
+}
+function renderJobs(data){const d=frame.contentDocument;if(!d)return;scoutJobs=data.jobs||[];const h=d.getElementById('dailyJobs'),s=d.getElementById('scanTime');if(s)s.textContent=data.generatedAt?'Last scan: '+new Date(data.generatedAt).toLocaleString():'Latest scan';if(!h)return;if(!scoutJobs.length){h.innerHTML='<div class="empty">No strong matches in the latest scan.</div>';return}h.innerHTML=scoutJobs.sort((a,b)=>(b.scoutScore||0)-(a.scoutScore||0)).map(j=>{const ready=scoutReady(j);return '<div class="scout-job"><div><span class="scout-badge scout-lane">'+esc(j.fitLane||'Strategic fit')+'</span> '+(j.foundDate===todayLocal()?'<span class="scout-badge scout-new">New Today</span> ':'')+'<span class="scout-badge '+(ready?'scout-ok':'scout-no')+'">'+(ready?'Ready — Description Captured':'Needs Revalidation')+'</span></div><h4>'+esc(j.title)+'</h4><div class="small">'+esc(j.company)+' · '+esc(j.location||'')+(j.salary?' · '+esc(j.salary):'')+'</div><p>'+esc(j.summary||'')+'</p><div class="scout-actions">'+(j.url?'<a class="btn secondary" target="_blank" rel="noopener" href="'+esc(j.url)+'">Open Job</a>':'')+'<button class="btn primary" onclick="addScoutToHub(\''+esc(j.id)+'\')" '+(ready?'':'disabled')+'>'+(ready?'Add to Opportunities':'Needs Revalidation')+'</button></div></div>'}).join('');installAssessmentFix()}
+async function loadFeed(){try{const r=await fetch('/data/daily-jobs.json?ts='+Date.now(),{cache:'no-store'});renderJobs(await r.json())}catch{const d=frame.contentDocument;if(d?.getElementById('dailyJobs'))d.getElementById('dailyJobs').innerHTML='<div class="empty">Daily Scout feed is temporarily unavailable.</div>'}}
+function addToHub(id){const j=scoutJobs.find(x=>x.id===id);if(!scoutReady(j)){alert('This role needs revalidation before assessment.');return}const d=frame.contentDocument,w=frame.contentWindow;const opps=getInnerOpps();const existing=opps.find(o=>norm(o.title)===norm(j.title)&&norm(o.company)===norm(j.company));if(existing){existing.description=j.jobDescription;existing.url=j.url||existing.url;saveInner();w.location.hash='opportunities';return}d.getElementById('oppTitle').value=j.title||'';d.getElementById('oppCompany').value=j.company||'';d.getElementById('oppUrl').value=j.url||'';d.getElementById('oppDescription').value=j.jobDescription||'';d.getElementById('oppStatus').value='To Review';d.getElementById('saveOpp').click();w.location.hash='opportunities'}
+frame.addEventListener('load',()=>setTimeout(()=>{installScout();installAssessmentFix()},350));
+</script>
+</body></html>
